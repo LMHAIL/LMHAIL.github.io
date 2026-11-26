@@ -151,6 +151,33 @@
 
   footer { margin-top: 28px; font-size: 12px; color: #6d727c; }
 
+
+  /* Style switcher */
+  .style-switcher { display:flex; justify-content:flex-end; margin:0 0 16px; }
+  .style-toggle { display:inline-flex; align-items:center; gap:9px; border:1px solid #2a2d37; border-radius:999px; padding:9px 14px; background:#15171d; color:#ececf1; font:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:all .22s ease; }
+  .style-toggle:hover { transform:translateY(-1px); border-color:#3ecf8e; }
+  .style-toggle:focus-visible { outline:2px solid #3ecf8e; outline-offset:3px; }
+  .style-toggle .theme-emoji { font-size:16px; }
+  body, .card, .search, .head, .style-toggle { transition:background-color .25s ease, background .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease; }
+  body[data-theme="girl"] { background:#fff0f7; background-image:radial-gradient(rgba(214,110,174,.11) 1px,transparent 1.1px); background-size:26px 26px; color:#492b43; }
+  body[data-theme="girl"]::before { background:radial-gradient(closest-side,rgba(245,153,210,.26),transparent 72%); }
+  body[data-theme="girl"] ::selection { background:rgba(222,106,173,.25); }
+  body[data-theme="girl"] .head { border-color:#f1c9df; }
+  body[data-theme="girl"] .sub, body[data-theme="girl"] footer, body[data-theme="girl"] .empty { color:#98718c; }
+  body[data-theme="girl"] .dot { background:#e477b4; box-shadow:0 0 0 3px rgba(228,119,180,.16); }
+  body[data-theme="girl"] .card { background:#fff8fc; border-color:#f1d3e5; color:#492b43; box-shadow:0 5px 18px rgba(190,101,155,.06); }
+  body[data-theme="girl"] .card:hover { background:#fff; border-color:#e6a9d0; }
+  body[data-theme="girl"] .card-title { color:#492b43; }
+  body[data-theme="girl"] .chip { color:#a17d96; }
+  body[data-theme="girl"] .ext { color:#b68ca8; }
+  body[data-theme="girl"] .card:hover .ext { color:#87466f; }
+  body[data-theme="girl"] .search { background:#fff8fc; border-color:#f1d3e5; color:#492b43; }
+  body[data-theme="girl"] .search::placeholder { color:#b18da5; }
+  body[data-theme="girl"] .search:focus { border-color:#e477b4; box-shadow:0 0 0 3px rgba(228,119,180,.14); background:#fff; }
+  body[data-theme="girl"] .style-toggle { background:#fff8fc; color:#744363; border-color:#f0c9df; }
+  body[data-theme="girl"] .style-toggle:hover { border-color:#d96aa9; }
+  body[data-theme="girl"] .card:focus-visible { outline-color:#e477b4; }
+
   @media (max-width: 480px) {
     .card { padding: 13px 14px; gap: 12px; }
     .icon { width: 40px; height: 40px; border-radius: 10px; }
@@ -165,6 +192,7 @@
 <body>
 
   <main>
+    <div class="style-switcher"><button class="style-toggle" id="styleToggle" type="button" aria-label="Switch website style" aria-pressed="false"><span class="theme-emoji" id="themeEmoji">🧢</span><span id="themeLabel">Boy style</span></button></div>
     <div class="head">
       <h1>my links</h1>
       <p class="sub"><span class="dot"></span>stuff i built. more coming maybe.</p>
@@ -252,6 +280,21 @@
   </main>
 
   <script>
+    const styleToggle = document.getElementById('styleToggle');
+    const themeEmoji = document.getElementById('themeEmoji');
+    const themeLabel = document.getElementById('themeLabel');
+    function setTheme(theme) {
+      document.body.dataset.theme = theme;
+      const girl = theme === 'girl';
+      styleToggle.setAttribute('aria-pressed', String(girl));
+      themeEmoji.textContent = girl ? '🎀' : '🧢';
+      themeLabel.textContent = girl ? 'Girl style' : 'Boy style';
+      document.querySelector('meta[name="theme-color"]').content = girl ? '#fff0f7' : '#0e0f13';
+      try { localStorage.setItem('links-theme', theme); } catch (e) {}
+    }
+    styleToggle.addEventListener('click', () => setTheme(document.body.dataset.theme === 'girl' ? 'boy' : 'girl'));
+    try { setTheme(localStorage.getItem('links-theme') === 'girl' ? 'girl' : 'boy'); } catch (e) { setTheme('boy'); }
+
     const searchInput = document.getElementById('linkSearch');
     const cards = [...document.querySelectorAll('#linkCards .card')];
     const noResults = document.getElementById('noResults');
