@@ -69,6 +69,13 @@
     margin-bottom: 26px;
   }
 
+  .search-wrap { position: relative; margin: 0 0 14px; }
+  .search-wrap svg { position: absolute; left: 15px; top: 50%; translate: 0 -50%; width: 18px; height: 18px; stroke: #777d88; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+  .search { width: 100%; border: 1px solid #24272f; border-radius: 12px; background: #15171d; color: #ececf1; padding: 13px 16px 13px 44px; font: inherit; font-size: 14px; outline: none; transition: border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+  .search::placeholder { color: #737985; }
+  .search:focus { border-color: #3ecf8e; box-shadow: 0 0 0 3px rgba(62,207,142,.12); background: #191c23; }
+  .empty { display: none; text-align: center; color: #8f939c; padding: 22px 12px; font-size: 14px; }
+
   .cards {
     display: flex;
     flex-direction: column;
@@ -163,7 +170,12 @@
       <p class="sub"><span class="dot"></span>stuff i built. more coming maybe.</p>
     </div>
 
-    <div class="cards">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+      <input class="search" id="linkSearch" type="search" placeholder="Search my links..." aria-label="Search my links" autocomplete="off">
+    </div>
+
+    <div class="cards" id="linkCards">
 
       <a class="card" href="https://youtube-blond-iota.vercel.app/" target="_blank" rel="noopener noreferrer">
         <span class="icon icon-yt">
@@ -234,9 +246,25 @@
 
 
     </div>
+    <p class="empty" id="noResults" role="status">No links found. Try another search.</p>
 
     <footer>last updated nov 2026</footer>
   </main>
 
+  <script>
+    const searchInput = document.getElementById('linkSearch');
+    const cards = [...document.querySelectorAll('#linkCards .card')];
+    const noResults = document.getElementById('noResults');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let visible = 0;
+      cards.forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(query) || card.href.toLowerCase().includes(query);
+        card.hidden = !matches;
+        if (matches) visible++;
+      });
+      noResults.style.display = visible ? 'none' : 'block';
+    });
+  </script>
 </body>
 </html>
